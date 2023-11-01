@@ -1,0 +1,244 @@
+YOUTUBE CLONE USING
+ - React JS
+ - Tailwind CSS
+ - Rapid API
+
+1. Project Setup (Folder Structure)
+2. Install Tailwind CSS Intellisence Extension
+3. *****npm i @tailwindcss/line-clamp axios   js-abbreviation-number react-player moment****
+
+****npm install -D tailwindcss****
+
+****npx tailwindcss init****
+
+replace code in tailwind.config.js with below code
+****/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [require("@tailwindcss/line-clamp")],
+}****
+
+In App.js,
+****import 'tailwindcss/tailwind.css';****
+
+Replace index.css file code with,
+*****@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+        "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+    height: 100vh;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+        monospace;
+}
+
+.load-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #fdba2c;
+}
+.bar {
+    content: "";
+    display: inline;
+    position: absolute;
+    width: 0;
+    height: 100%;
+    left: 50%;
+    text-align: center;
+}
+.bar:nth-child(1) {
+    background-color: #da4733;
+    animation: loading 3s linear infinite;
+}
+.bar:nth-child(2) {
+    background-color: #3b78e7;
+    animation: loading 3s linear 1s infinite;
+}
+.bar:nth-child(3) {
+    background-color: #fdba2c;
+    animation: loading 3s linear 2s infinite;
+}
+@keyframes loading {
+    from {
+        left: 50%;
+        width: 0;
+        z-index: 100;
+    }
+    33.3333% {
+        left: 0;
+        width: 100%;
+        z-index: 10;
+    }
+    to {
+        left: 0;
+        width: 100%;
+    }
+}
+
+.custom-h {
+    height: auto !important;
+}
+@media screen and (min-width: 1024px) {
+    .custom-h {
+        height: 100vh !important;
+    }
+}*****
+
+Paste images folder into src folder (link in description)
+
+4. npm i react-router-dom react-icons
+5. Visit Rapid API website (https://rapidapi.com/hub)
+   - Search youtube & Subscribe to free plan
+
+     VERY VERY VERY VERY IMPORTANT STEPS
+6. - In src folder, create two folders    1.context      2.utils
+   - Now, in root folder create a file .env & paste below code,
+     **** REACT_APP_YOUTUBE_API_KEY='437d74aff1mshaffd44f571d5b7bp1938f6jsn8fe565daa08b'****
+   - Now, in context folder create a file contextApi.js.
+   - CopyPaste below code in contextApi.js file,
+     *****import React, {createContext, useState, useEffect} from 'react';
+import {fetchDataFromApi} from '../utils/api';
+
+export const Context = createContext();
+
+export const AppContext = (props) => {
+    const [loading, setLoading] = useState();
+    const [searchResults, setSearchResults] = useState();
+    const [selectCategories, setSelectCategories] = useState();
+    const [mobileMenu, setMobileMenu] = useState();
+
+    useEffect(()=>{
+       fetchSelectedCategoryData(selectCategories)
+    },[selectCategories])
+
+    const fetchSelectedCategoryData = (query) => {
+        setLoading(true)
+        fetchDataFromApi(`search/?q=${query}`).then(({contents})=>{
+            console.log(contents);
+            setSearchResults(contents);
+            setLoading(false);
+        })
+    }
+
+    return (
+        <Context.Provider value={{
+            loading,
+            setLoading,
+            searchResults,
+            setSearchResults,
+            selectCategories,
+            setSelectCategories,
+            mobileMenu,
+            setMobileMenu
+        }}>
+            {props.children}
+        </Context.Provider>
+    )
+}****
+
+ - In utils folder, create two files.   1. api.js    2. constants.js
+ - In api.js CopyPaste below code,
+   ****import axios from "axios";
+
+const BASE_URL = 'https://youtube138.p.rapidapi.com';
+
+const options = {
+  params: {
+    hl: 'en',
+    gl: 'US'
+  },
+  headers: {
+    'X-RapidAPI-Key': process.env.REACT_APP_YOUTUBE_API_KEY,
+    'X-RapidAPI-Host': 'youtube138.p.rapidapi.com'
+  }
+};
+
+export const fetchDataFromApi = async (url) => {
+  try {
+    const { data } = await axios.get(`${BASE_URL}/${url}`, options);
+    return data;
+  } catch (error) {
+    // Handle errors, such as logging them or returning an error message.
+    console.error(error);
+    throw error; // Rethrow the error to be handled by the caller.
+  }
+}*****
+
+  - In constants.js CopyPaste below code,
+    *****import React from "react";
+
+import { AiFillHome, AiOutlineFlag } from "react-icons/ai";
+import { MdLocalFireDepartment, MdLiveTv } from "react-icons/md";
+import { CgMusicNote } from "react-icons/cg";
+import { FiFilm } from "react-icons/fi";
+import { IoGameControllerSharp } from "react-icons/io5";
+import { ImNewspaper } from "react-icons/im";
+import { GiDiamondTrophy, GiEclipse } from "react-icons/gi";
+import { RiLightbulbLine, RiFeedbackLine } from "react-icons/ri";
+import { FiSettings, FiHelpCircle } from "react-icons/fi";
+
+export const categories = [
+    { name: "New", icon: <AiFillHome />, type: "home" },
+    { name: "Trending", icon: <MdLocalFireDepartment />, type: "category" },
+    { name: "Music", icon: <CgMusicNote />, type: "category" },
+    { name: "Films", icon: <FiFilm />, type: "category" },
+    { name: "Live", icon: <MdLiveTv />, type: "category" },
+    { name: "Gaming", icon: <IoGameControllerSharp />, type: "category" },
+    { name: "News", icon: <ImNewspaper />, type: "category" },
+    { name: "Sports", icon: <GiDiamondTrophy />, type: "category" },
+    { name: "Learning", icon: <RiLightbulbLine />, type: "category" },
+    {
+        name: "Fashion & beauty",
+        icon: <GiEclipse />,
+        type: "category",
+        divider: true,
+    },
+    { name: "Settings", icon: <FiSettings />, type: "menu" },
+    { name: "Report History", icon: <AiOutlineFlag />, type: "menu" },
+    { name: "Help", icon: <FiHelpCircle />, type: "menu" },
+    { name: "Send feedback", icon: <RiFeedbackLine />, type: "menu" },
+];*****
+
+7. Create all the necessary components, in components folder, in src folder.
+  - Feed.jsx 
+  - Header.jsx
+  - LeftNav.jsx
+  - LeftNavMenuItem.jsx
+  - SearchResult.jsx
+  - SearchResultVideoCard.jsx
+  - SuggestionVideoCard.jsx
+  - VideoCard.jsx
+  - VideoDetails.jsx
+
+8. Write Code for entire app.
+9. Deploy your web app!
+   - in terminal, npm run build (it will take some time)
+   - You will get to see build folder in our folder structure.
+   - gonto netlify website, signup.
+   - now go to sites option, in there you will see a drop section
+   - now come back in vsCode, rightClick on build folder and select Reveal in File Explorer Option.
+   - now drag this build folder in drop section on netlify->sites.
+   - It will take some time........
+   - Now click on SiteConfiguration->Change Site name->(Name your website)->Save
+   - After some time, you will get your website link.
+
+   AND YOU ARE DONE!!
+   CONGRATULATIONS DEAR.....
